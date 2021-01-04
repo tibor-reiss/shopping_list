@@ -19,5 +19,5 @@ from shopping_list.views import home, list, recipe
   drop down menu for recipe names inside meals calendar
   autocompletion/suggestions when typing ingredients (lowercase and uppercase should not matter -> convert everything to lowercase?)
   recipe images
-  recipes in alphabetic order
+  more tests
 '''

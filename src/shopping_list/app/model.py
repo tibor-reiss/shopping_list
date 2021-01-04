@@ -14,7 +14,7 @@ class Ingredient(Base):
     __tablename__ = 'shlist.ingredient'
     id = Column(Integer, primary_key=True, autoincrement=True)
     ing_name = Column(String(32), unique=True)
-    unit = Column(String(4))
+    unit = Column(String(10))
 
     def __init__(self, ing_name: str, unit: Optional[str] = None):
         self.ing_name = ing_name

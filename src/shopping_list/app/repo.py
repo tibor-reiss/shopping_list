@@ -7,6 +7,9 @@ from typing import Optional, List, Tuple
 from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
 
+EXCLUDE_INGREDIENT = ['salt', 'pepper', 'water']
+
+
 class SqlAlchemyRepository:
     def __init__(self, session):
         self.session = session
@@ -46,5 +49,6 @@ class SqlAlchemyRepository:
             ).join(t_m, getattr(t_m, column_name) == t_r.title
             ).filter(t_m.date >= start_date).filter(t_m.date <= end_date
             ).filter(t_ri.amount > 0
+            ).filter(t_i.ing_name.notin_(EXCLUDE_INGREDIENT)
             ).group_by(t_i.ing_name
             ).group_by(t_i.unit).all()

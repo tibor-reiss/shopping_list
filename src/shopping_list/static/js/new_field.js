@@ -3,7 +3,7 @@ $(function(){
         var allFieldsFilled = true;
         var numberOfFields = 0;
         $("#ingredients_section").children('input').each(function() {
-            var pattern = new RegExp(/^ingredients-\d-ing_name/);
+            var pattern = new RegExp(/^ingredients-\d+-ing_name/);
             if (pattern.test($(this).attr('name'))) {
                 numberOfFields++;
                 if ($(this).val() == "") {

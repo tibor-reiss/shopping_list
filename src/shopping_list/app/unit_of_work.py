@@ -57,7 +57,7 @@ def get_recipes(uow: UoW) -> Dict[Recipe]:
     recipes = {}
     with uow:
         for r in uow.repo.get_all(Recipe):
-            recipes[r.id] = r.title
+            recipes[r.title] = r.id
     return recipes
 
 
