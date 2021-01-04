@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{url_for('static', filename='js/new_field.js') }}"></script>
+
+<style>
+    .container { width: 100%; }
+    .outer_column { width: 50%; float: left; }
+    .clear { clear: both; }
+    #recipe_description { width: 90%; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ recipe_id }}</h1>
+    <form method="post" action="">
+        <input type="submit" name="submit" value="SAVE RECIPE" />
+        <br />
+        <div class="container">
+            <div class="outer_column">
+                <p>{{ form.title }}<br /><br />{{ form.description(rows="15", id="recipe_description") }}</p>
+            </div>
+            <div class="outer_column" id="ingredients_section">
+                {% for ing in form.ingredients %}
+                    {{ ing.ing_name(size=15) }}&nbsp{{ ing.amount(size=5, style="text-align: right") }}&nbsp{{ ing.unit(size=5) }}<br />
+                {% endfor %}
+            </div>
+        </div>
+      </form>
+{% endblock %}

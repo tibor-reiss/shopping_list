@@ -1,0 +1,14 @@
+<html>
+<head>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div>Go to:
+        <a href="{{ url_for('view_index') }}">Home</a>
+        <a href="{{ url_for('view_list') }}">List</a>
+        <a href="{{ url_for('view_all_recipes') }}">Recipe</a>
+        <a href="{{ url_for('new_recipe') }}">NewRecipe</a>
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends  "base.html" %}
+
+{% block extra_head %}
+<style>
+    table#table_dates th, td {
+        padding: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>MEALS</h1>
+    <form action="" method="post">
+        <table id="table_dates" border="1px solid balck">
+            <tr>
+                <th></th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+            {% set form_length = skip + form.meals|length %}
+            {% for i in range(form_length) %}
+                {% if i % 7 == 0 %}
+                    <tr>
+                    <td style="font-weight:bold">Date<br>Lunch<br>Dinner</td>
+                {% endif %}
+                {% if i < skip %}    
+                    <td></td>
+                {% else %}
+                    {% set f = form.meals[i-skip] %}
+                    <td>{{ f.date }}<br>{{ f.lunch }}<br>{{ f.dinner }}</td>
+                {% endif %}
+                {% if i % 7 == 6 %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <p><input type="submit" value="SAVE" /></p>
+    </form>
+{% endblock %}

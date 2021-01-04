@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{url_for('static', filename='js/new_field.js') }}"></script>
+
+<style>
+    .container { width: 100%; }
+    .outer_column { width: 50%; float: left; }
+    .clear { clear: both; }
+    .inner_column { display: table-row; }
+    input { display: table-cell; }
+    label { display: table-cell; }
+    .list_item { display: table-cell; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>SHOPPING LIST</h1>
+    <form action="" method="post">
+    	<div class="container">
+            <div class="outer_column">
+                <div class="inner_column">
+                    <label for="start_date">Start date</label>
+                    <input type="date" id="start_date" name="start_date" value={{ start_date }} />
+                    <script>
+                    	document.getElementById('start_date').value = new Date().toISOString().slice(0, 10);
+                    </script>
+                </div>
+                <div class="inner_column">
+                    <label for="end_date">End date</label>
+                    <input type="date" id="end_date" name="end_date" value ={{ end_date }} />
+                    <script>
+                    	document.getElementById('end_date').value = new Date().toISOString().slice(0, 10);
+                    </script>
+                </div>
+                <div class="inner_column">
+                	<input type="submit" value="GET LIST" />
+                </div>
+            </div>
+            <div class="outer_column" id="ingredients_section">
+                {% if shopping_list is not none %}{% for key, value in shopping_list.items() %}
+                    <div class="inner_column">
+                        <input type="text" value={{ key }} size=15 />&nbsp<!--
+                        --><input type="text" value={{ value[0] }} size=5 style="text-align: right" /><!--
+                        -->&nbsp<input type="text" value={{ value[1] }} size=5</div>
+                        <br />
+                    </div>
+                {% endfor %}{% endif %}
+                <div class="innger_column">
+                    <input type='text' name='ingredients-0-ing_name' id='ingredients-0-ing_name' size=15 />&nbsp<!--
+	            --><input type='text' name='ingredients-0-amount' id='ingredients-0-amount' size=5 style="text-align: right" /><!--
+	            -->&nbsp<input type='text' name='ingredients-0-unit' id='ingredients-0-unit' size=5 />
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </form>
+{% endblock %}

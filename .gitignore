@@ -1,0 +1,9 @@
+.vscode/
+.pytest_cache/
+.tox/
+dist/
+**/__pycache__/
+**/*.egg-info/
+.coverage
+**/*.ipynb
+**/*.ipynb_checkpoints/
