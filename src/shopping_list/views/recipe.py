@@ -1,20 +1,30 @@
 from flask import abort, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
-from wtforms import IntegerField, FieldList, FloatField, FormField, StringField, TextAreaField, validators
+from wtforms import (
+    IntegerField,
+    FieldList,
+    FloatField,
+    FormField,
+    SelectField,
+    StringField,
+    TextAreaField,
+    validators,
+)
 
 from shopping_list.app import app
+from shopping_list.app.model import CATEGORIES, Recipe
 from shopping_list.app.unit_of_work import add_recipe, get_recipe, get_recipes, UoW
-from shopping_list.app.model import Recipe
 
 
 class IngredientForm(FlaskForm):
     ing_name = StringField('ing_name')
     unit = StringField('unit')
     amount = FloatField('amount')
+    category = SelectField('category', choices=CATEGORIES + [''], default='', )
 
 
 class RecipeForm(FlaskForm):
-    title = StringField('title', [validators.Required()])
+    title = StringField('title', [validators.DataRequired()])
     description = TextAreaField('description')
     ingredients = FieldList(FormField(IngredientForm))
 

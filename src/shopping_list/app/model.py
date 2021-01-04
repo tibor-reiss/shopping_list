@@ -7,18 +7,21 @@ from sqlalchemy.orm import backref, relationship
 from typing import Optional
 
 
+CATEGORIES = ['fruit', 'vegetable', 'spice', 'meat', 'bread', 'dairy', 'exotic', 'side_dish', 'nut']
 Base = declarative_base()
 
 
 class Ingredient(Base):
     __tablename__ = 'shlist.ingredient'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ing_name = Column(String(32), unique=True)
+    ing_name = Column(String(32), unique=True, nullable=False)
     unit = Column(String(10))
+    category = Column(String(10), nullable=False)
 
-    def __init__(self, ing_name: str, unit: Optional[str] = None):
+    def __init__(self, ing_name: str, category: str, unit: Optional[str] = None):
         self.ing_name = ing_name
         self.unit = unit
+        self.category = category
 
 
 class Recipe(Base):

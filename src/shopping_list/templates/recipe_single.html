@@ -13,17 +13,20 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ recipe_id }}</h1>
-    <form method="post" action="">
+    <form method="post" action="" id="recipe_single">
+        <p>{{ form.title(style="font-size: 18; font-weight: bold") }}</p>
         <input type="submit" name="submit" value="SAVE RECIPE" />
         <br />
         <div class="container">
             <div class="outer_column">
-                <p>{{ form.title }}<br /><br />{{ form.description(rows="15", id="recipe_description") }}</p>
+                <p>{{ form.description(rows="15", id="recipe_description") }}</p>
             </div>
             <div class="outer_column" id="ingredients_section">
                 {% for ing in form.ingredients %}
-                    {{ ing.ing_name(size=15) }}&nbsp{{ ing.amount(size=5, style="text-align: right") }}&nbsp{{ ing.unit(size=5) }}<br />
+                    {{ ing.ing_name(size=15) }}<!--
+                    -->&nbsp{{ ing.amount(size=5, style="text-align: right") }}<!--
+                    -->&nbsp{{ ing.unit(size=5) }}<!--
+                    -->&nbsp{{ ing.category }}<br />
                 {% endfor %}
             </div>
         </div>

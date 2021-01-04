@@ -17,7 +17,7 @@
 
 {% block content %}
     <h1>SHOPPING LIST</h1>
-    <form action="" method="post">
+    <form action="" method="post" id="shopping_list">
     	<div class="container">
             <div class="outer_column">
                 <div class="inner_column">
@@ -26,6 +26,7 @@
                     <script>
                     	document.getElementById('start_date').value = new Date().toISOString().slice(0, 10);
                     </script>
+                    <br />
                 </div>
                 <div class="inner_column">
                     <label for="end_date">End date</label>
@@ -39,18 +40,23 @@
                 </div>
             </div>
             <div class="outer_column" id="ingredients_section">
-                {% if shopping_list is not none %}{% for key, value in shopping_list.items() %}
-                    <div class="inner_column">
-                        <input type="text" value={{ key }} size=15 />&nbsp<!--
-                        --><input type="text" value={{ value[0] }} size=5 style="text-align: right" /><!--
-                        -->&nbsp<input type="text" value={{ value[1] }} size=5</div>
-                        <br />
-                    </div>
-                {% endfor %}{% endif %}
-                <div class="innger_column">
-                    <input type='text' name='ingredients-0-ing_name' id='ingredients-0-ing_name' size=15 />&nbsp<!--
-	            --><input type='text' name='ingredients-0-amount' id='ingredients-0-amount' size=5 style="text-align: right" /><!--
-	            -->&nbsp<input type='text' name='ingredients-0-unit' id='ingredients-0-unit' size=5 />
+                {% if shopping_list is not none %}
+                    {% set len_shopping_list = shopping_list|length|string %}
+                    {% for key, value in shopping_list.items() %}
+                        <div class="inner_column">
+                            <input type="text" value="{{ key }}" size=15 /><!--
+                            -->&nbsp<input type="text" value="{{ value[0] }}" size=5 style="text-align: right" /><!--
+                            -->&nbsp<input type="text" value="{{ value[1] }}" size=5 />
+                            <br />
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% set len_shopping_list = 0|string %}
+                {% endif %}
+                <div class="inner_column">
+                    <input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_name' }} size=15 /><!--
+	                -->&nbsp<input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_amount' }} size=5 style="text-align: right" /><!--
+	                -->&nbsp<input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_unit' }} size=5 />
                 </div>
             </div>
             <div class="clear"></div>

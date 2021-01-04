@@ -20,4 +20,5 @@ from shopping_list.views import home, list, recipe
   autocompletion/suggestions when typing ingredients (lowercase and uppercase should not matter -> convert everything to lowercase?)
   recipe images
   more tests
+  unit can't be overwritten, only 1 allowed
 '''

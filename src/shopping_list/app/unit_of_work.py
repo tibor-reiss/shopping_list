@@ -88,10 +88,10 @@ def add_recipe(
         recipe.description = recipe_description
         recipe.ingredients = []  # When saving delete all existing and recreate instead of checking what is not present
         for i in ingredients:
-            ing_name, unit, amount = itemgetter('ing_name', 'unit', 'amount')(i.data)
+            ing_name, unit, amount, category = itemgetter('ing_name', 'unit', 'amount', 'category')(i.data)
             if not ing_name:
                 continue
-            ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name) or Ingredient(ing_name, unit)
+            ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name) or Ingredient(ing_name, category, unit)
             recing = RecipeIngredient(ingredient, recipe, amount)
             uow.repo.add(recing)
         uow.commit()
@@ -99,19 +99,19 @@ def add_recipe(
     return recipe_id
 
 
-def generate_ingerdient_dict(sh_list: List[Tuple[str, Union[int, double], str]]) -> Dict[str, Tuple(Union[int, double], str)]:
+def generate_ingredient_dict(sh_list: List[Tuple[str, Union[int, double], str]]) -> Dict[str, Tuple(Union[int, double], str)]:
     temp = filter(lambda x: x.total is not None, sh_list)
     temp = map(lambda x: (x[0], (x[1], x[2])), temp)
     return dict(temp)
 
 
 
-def generate_shopping_list(uow: UoW, start_date: dt, end_date: dt) -> Dict[str, double]:
+def generate_shopping_list(uow: UoW, start_date: dt, end_date: dt) -> Dict[str, Tuple[double, str]]:
     with uow:
         ingredients_lunch = uow.repo.get_total_ingredients(start_date, end_date, 'lunch')
         ingredients_dinner = uow.repo.get_total_ingredients(start_date, end_date, 'dinner')
-        ingredients = generate_ingerdient_dict(ingredients_lunch)
-        ingredients_dinner = generate_ingerdient_dict(ingredients_dinner)
+        ingredients = generate_ingredient_dict(ingredients_lunch)
+        ingredients_dinner = generate_ingredient_dict(ingredients_dinner)
         for i in ingredients_dinner:
             if i in ingredients:
                 ingredients[i] = (ingredients[i][0] + ingredients_dinner[i][0], ingredients[i][1])

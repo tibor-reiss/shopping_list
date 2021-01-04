@@ -25,7 +25,7 @@ class SqlAlchemyRepository:
 
     def get_all_recipe_ingredients(self, recipe_id: int) -> List[Tuple[str, str, float]]:
         return self.session.query(
-                Ingredient.ing_name.label('ing_name'), Ingredient.unit, RecipeIngredient.amount
+                Ingredient.ing_name, Ingredient.unit, RecipeIngredient.amount, Ingredient.category
             ).filter(RecipeIngredient.recipe_id == recipe_id
             ).join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id
             ).all()
