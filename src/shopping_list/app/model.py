@@ -61,11 +61,11 @@ class Meal(Base):
         self.date = date
         self.lunch = lunch
         self.dinner = dinner
-    
+
     @hybrid_property
     def lunch(self):
         return self._lunch
-    
+
     @lunch.setter
     def lunch(self, value):
         self._lunch = value if value else None  # Need to handle empty string the same way as None
@@ -73,7 +73,7 @@ class Meal(Base):
     @hybrid_property
     def dinner(self):
         return self._dinner
-    
+
     @dinner.setter
     def dinner(self, value):
         self._dinner = value if value else None  # Need to handle empty string the same way as None

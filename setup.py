@@ -29,10 +29,10 @@ setuptools.setup(
     packages=setuptools.find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
-    extras_require = {'test': test_deps,},
+    extras_require={'test': test_deps, },
     install_requires=[
         'wheel',
     ],
-    tests_require = test_deps,
+    tests_require=test_deps,
     python_requires='>=3.8',
 )

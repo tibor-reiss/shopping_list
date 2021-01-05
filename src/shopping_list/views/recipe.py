@@ -2,7 +2,6 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from typing import Optional
 from wtforms import (
-    IntegerField,
     FieldList,
     FloatField,
     FormField,
@@ -13,7 +12,7 @@ from wtforms import (
 )
 
 from shopping_list.app import app, uow
-from shopping_list.app.model import CATEGORIES, Recipe
+from shopping_list.app.model import CATEGORIES
 from shopping_list.app.commands import add_recipe, get_recipe, get_recipes
 
 
@@ -30,8 +29,13 @@ class IngredientForm(FlaskForm):
     ing_name = StringField('ing_name')
     unit = StringField('unit')
     amount = FloatField('amount', [validators.Optional(), ])
-    category = SelectField('category', [validate_not_empty('ing_name')], choices=CATEGORIES + [''], default='', )
-    
+    category = SelectField(
+        'category',
+        [validate_not_empty('ing_name')],
+        choices=CATEGORIES + [''],
+        default='',
+    )
+
     # Needed because of FormField in RecipeForm which would require another csrf token
     def __init__(self, csrf_enabled=False, *args, **kwargs):
         super(IngredientForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
@@ -53,7 +57,7 @@ def flash_messages(form):
 @app.route('/recipe', methods=['GET'])
 def view_all_recipes():
     recipes = get_recipes(uow)
-    return render_template('recipe_all.html', recipes = recipes)
+    return render_template('recipe_all.html', recipes=recipes)
 
 
 @app.route('/recipe/<recipe_id>', methods=['GET', 'POST'])
@@ -67,7 +71,7 @@ def view_recipe(recipe_id):
         return render_template('recipe_single.html', form=form, recipe_id=recipe_id, ingredients=uow.ingredients)
     elif request.method == 'POST':
         form = RecipeForm(request.form)
-        empty_ingredient = form.ingredients.entries.pop()  # Remove empty line from the end
+        form.ingredients.entries.pop()  # Remove empty line from the end
         if not form.validate_on_submit():
             flash_messages(form)
         else:

@@ -10,7 +10,7 @@ class UoW:
     def __init__(self, session_factory: sessionmaker = PSQL_SESSION_FACTORY):
         self.session_factory = session_factory
         self.ingredients = None
-    
+
     def __enter__(self) -> UoW:
         self.session = self.session_factory()
         self.repo = SqlAlchemyRepository(self.session)
@@ -18,13 +18,13 @@ class UoW:
         if self.ingredients is None:
             self.ingredients = self.repo.get_all_ingredients()
         return self
-    
+
     def __exit__(self, *args):
         self.session.rollback()
         self.session.close()
-    
+
     def commit(self):
         self.session.commit()
-    
+
     def append_ingredient(self, ing_name: str, unit: Optional[str] = None, category: Optional[str] = None):
         self.ingredients[ing_name] = {'unit': unit, 'category': category}
