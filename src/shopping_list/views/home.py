@@ -3,9 +3,8 @@ from flask import render_template, request
 from flask_wtf import FlaskForm
 from wtforms import DateField, FieldList, FormField, StringField
 
-from shopping_list.app import app
-from shopping_list.app.unit_of_work import add_meal, get_meals, UoW
-
+from shopping_list.app import app, uow
+from shopping_list.app.unit_of_work import add_meal, get_meals
 
 
 class MealForm(FlaskForm):
@@ -21,11 +20,11 @@ class MealListForm(FlaskForm):
 @app.route('/index', methods=['GET', 'POST'])
 def view_index():
     if request.method == 'GET':
-        meals = get_meals(UoW())
+        meals = get_meals(uow)
         data = {'meals': meals}
         form = MealListForm(data=data)
     if request.method == 'POST':
         form = MealListForm(request.form)
         for entry in form.meals.entries:
-            add_meal(UoW(), entry.data['date'], entry.data['lunch'], entry.data['dinner'])
+            add_meal(uow, entry.data['date'], entry.data['lunch'], entry.data['dinner'])
     return render_template('index.html', form=form, skip=datetime.date.today().weekday())

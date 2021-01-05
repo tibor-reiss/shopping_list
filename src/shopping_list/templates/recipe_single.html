@@ -3,6 +3,11 @@
 {% block extra_head %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{url_for('static', filename='js/new_field.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ingredients.js') }}"></script>
+
+<script>
+    var ings = {{ ingredients|tojson }};
+</script>
 
 <style>
     .container { width: 100%; }

@@ -7,7 +7,8 @@ from typing import Optional, List, Tuple
 from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
 
-EXCLUDE_INGREDIENT = ['salt', 'pepper', 'water']
+EXCLUDE_INGREDIENT = ['water', ]
+EXCLUDE_CATEGORY = ['spice', ]
 
 
 class SqlAlchemyRepository:
@@ -22,6 +23,12 @@ class SqlAlchemyRepository:
     
     def get_all(self, obj_type):
         return self.session.query(obj_type).all()
+
+    def get_all_ingredients(self):
+        all_ingredients = {}
+        for ing in self.session.query(Ingredient).all():
+            all_ingredients[ing.ing_name] = {'unit': ing.unit, 'category': ing.category}
+        return all_ingredients
 
     def get_all_recipe_ingredients(self, recipe_id: int) -> List[Tuple[str, str, float]]:
         return self.session.query(
@@ -50,5 +57,6 @@ class SqlAlchemyRepository:
             ).filter(t_m.date >= start_date).filter(t_m.date <= end_date
             ).filter(t_ri.amount > 0
             ).filter(t_i.ing_name.notin_(EXCLUDE_INGREDIENT)
+            ).filter(t_i.category.notin_(EXCLUDE_CATEGORY)
             ).group_by(t_i.ing_name
             ).group_by(t_i.unit).all()

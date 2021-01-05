@@ -13,10 +13,14 @@ from shopping_list.app.repo import SqlAlchemyRepository
 class UoW:
     def __init__(self, session_factory: sessionmaker = PSQL_SESSION_FACTORY):
         self.session_factory = session_factory
+        self.ingredients = None
     
     def __enter__(self) -> UoW:
         self.session = self.session_factory()
         self.repo = SqlAlchemyRepository(self.session)
+        # Initialize only the first time the uow is used (and extend it with new ingredients in add_recipe)
+        if self.ingredients is None:
+            self.ingredients = self.repo.get_all_ingredients()
         return self
     
     def __exit__(self, *args):
@@ -25,6 +29,9 @@ class UoW:
     
     def commit(self):
         self.session.commit()
+    
+    def append_ingredient(self, ing_name: str, unit: Optional[str] = None, category: Optional[str] = None):
+        self.ingredients[ing_name] = {'unit': unit, 'category': category}
 
 
 def get_meals(uow: UoW) -> List[Meal]:
@@ -91,7 +98,10 @@ def add_recipe(
             ing_name, unit, amount, category = itemgetter('ing_name', 'unit', 'amount', 'category')(i.data)
             if not ing_name:
                 continue
-            ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name) or Ingredient(ing_name, category, unit)
+            ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name)
+            if ingredient is None:
+                ingredient = Ingredient(ing_name, category, unit)
+                uow.append_ingredient(ing_name, category, unit)
             recing = RecipeIngredient(ingredient, recipe, amount)
             uow.repo.add(recing)
         uow.commit()
