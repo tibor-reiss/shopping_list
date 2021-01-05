@@ -14,7 +14,7 @@ from wtforms import (
 
 from shopping_list.app import app, uow
 from shopping_list.app.model import CATEGORIES, Recipe
-from shopping_list.app.unit_of_work import add_recipe, get_recipe, get_recipes
+from shopping_list.app.commands import add_recipe, get_recipe, get_recipes
 
 
 def validate_not_empty(field_name: Optional[str] = None):

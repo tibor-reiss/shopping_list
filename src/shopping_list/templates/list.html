@@ -41,7 +41,6 @@
             </div>
             <div class="outer_column" id="ingredients_section">
                 {% if shopping_list is not none %}
-                    {% set len_shopping_list = shopping_list|length|string %}
                     {% for key, value in shopping_list.items() %}
                         <div class="inner_column">
                             <input type="text" value="{{ key }}" size=15 /><!--
@@ -50,14 +49,7 @@
                             <br />
                         </div>
                     {% endfor %}
-                {% else %}
-                    {% set len_shopping_list = 0|string %}
                 {% endif %}
-                <div class="inner_column">
-                    <input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_name' }} size=15 /><!--
-	                -->&nbsp<input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_amount' }} size=5 style="text-align: right" /><!--
-	                -->&nbsp<input type='text' id={{ 'ingredients-' + len_shopping_list + '-ing_unit' }} size=5 />
-                </div>
             </div>
             <div class="clear"></div>
         </div>

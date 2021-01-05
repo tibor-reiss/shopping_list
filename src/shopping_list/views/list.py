@@ -1,7 +1,7 @@
 from flask import render_template, request
 
 from shopping_list.app import app, uow
-from shopping_list.app.unit_of_work import generate_shopping_list
+from shopping_list.app.commands import generate_shopping_list
 
 
 @app.route('/list', methods=['GET', 'POST'])

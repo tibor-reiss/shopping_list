@@ -35,6 +35,7 @@ class SqlAlchemyRepository:
                 Ingredient.ing_name, Ingredient.unit, RecipeIngredient.amount, Ingredient.category
             ).filter(RecipeIngredient.recipe_id == recipe_id
             ).join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id
+            ).order_by(Ingredient.ing_name
             ).all()
 
     def get_one_recipe_ingredient(self, recipe_id: int, ingredient_id: int) -> Optional[RecipeIngredient]:
@@ -59,4 +60,7 @@ class SqlAlchemyRepository:
             ).filter(t_i.ing_name.notin_(EXCLUDE_INGREDIENT)
             ).filter(t_i.category.notin_(EXCLUDE_CATEGORY)
             ).group_by(t_i.ing_name
-            ).group_by(t_i.unit).all()
+            ).group_by(t_i.unit
+            ).group_by(t_i.category
+            ).order_by(t_i.category
+            ).all()
