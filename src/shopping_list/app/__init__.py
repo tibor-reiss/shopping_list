@@ -21,4 +21,6 @@ from shopping_list.views import home, list, recipe
   recipe images
   more tests
   unit can't be overwritten, only 1 allowed
+  jquery: form.submit -> remove empty ingredient line at the end so that pop/append is not needed
+  !!!jquery: get options programmatically from the previous field instead of hard-coding
 '''
