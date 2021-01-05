@@ -68,17 +68,16 @@ def view_recipe(recipe_id):
             abort(404)
         data = {'title': recipe.title, 'description': recipe.description, 'ingredients': ingredients}
         form = RecipeForm(data=data)
-        return render_template('recipe_single.html', form=form, recipe_id=recipe_id, ingredients=uow.ingredients)
     elif request.method == 'POST':
         form = RecipeForm(request.form)
-        form.ingredients.entries.pop()  # Remove empty line from the end
+        form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
         if not form.validate_on_submit():
             flash_messages(form)
         else:
             recipe_title = form.data['title']
             recipe_description = form.data['description']
             _ = add_recipe(uow, recipe_id, recipe_title, recipe_description, form.ingredients.entries)
-        return redirect(url_for('view_recipe', recipe_id=recipe_id))
+    return render_template('recipe_single.html', form=form, recipe_id=recipe_id, ingredients=uow.ingredients)
 
 
 @app.route('/recipe/new', methods=['GET', 'POST'])
@@ -89,7 +88,7 @@ def new_recipe():
         return render_template('recipe_single.html', form=form, recipe_id='New', ingredients=uow.ingredients)
     elif request.method == 'POST':
         form = RecipeForm(request.form)
-        form.ingredients.entries.pop()  # Remove empty line from the end
+        form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
         if not form.validate_on_submit():
             flash_messages(form)
             return render_template('recipe_single.html', form=form, recipe_id='New', ingredients=uow.ingredients)
