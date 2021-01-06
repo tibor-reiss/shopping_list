@@ -11,7 +11,7 @@ from wtforms import (
     validators,
 )
 
-from shopping_list.app import app, uow
+from shopping_list.app.app import app, uow
 from shopping_list.app.model import CATEGORIES
 from shopping_list.app.commands import add_recipe, get_recipe, get_recipes
 

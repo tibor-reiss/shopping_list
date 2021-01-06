@@ -1,6 +1,6 @@
 from flask import render_template, request
 
-from shopping_list.app import app, uow
+from shopping_list.app.app import app, uow
 from shopping_list.app.commands import generate_shopping_list
 
 

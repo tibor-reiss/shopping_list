@@ -3,7 +3,7 @@ from flask import render_template, request
 from flask_wtf import FlaskForm
 from wtforms import DateField, FieldList, FormField, StringField
 
-from shopping_list.app import app, uow
+from shopping_list.app.app import app, uow
 from shopping_list.app.commands import add_meal, get_meals
 
 

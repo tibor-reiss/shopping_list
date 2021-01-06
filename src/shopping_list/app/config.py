@@ -10,7 +10,6 @@ class Config:
         raise RuntimeError("Missing environment variable SECRET_CONFIG")
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'very-difficult-to-guess-secret-key'
     DEBUG = True
-    # EXPLAIN_TEMPLATE_LOADING = True
 
 
 def get_postgres_connection():

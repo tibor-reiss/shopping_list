@@ -2,7 +2,7 @@ from datetime import date
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from shopping_list.app import model, repo
+from shopping_list.app import model
 
 
 def test_add_new_recipe(sqlite_session_factory):
@@ -37,7 +37,7 @@ def test_add_new_meal_with_recipes(sqlite_session_factory):
 
 def test_add_new_recipe_with_ingredient(sqlite_session_factory):
     recipe = model.Recipe('Chicken')
-    ingredient = model.Ingredient('salt')
+    ingredient = model.Ingredient('salt', 'spice')
     recipe.ingredients.append(ingredient)
     session = sqlite_session_factory()
     session.add_all([recipe, ingredient])
