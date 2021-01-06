@@ -24,13 +24,13 @@ class SqlAlchemyRepository:
     def get_all(self, obj_type):
         return self.session.query(obj_type).all()
 
-    def get_all_ingredients(self):
+    def get_all_ingredients_as_dict(self):
         all_ingredients = {}
         for ing in self.session.query(Ingredient).all():
             all_ingredients[ing.ing_name] = {'unit': ing.unit, 'category': ing.category}
         return all_ingredients
 
-    def get_all_recipe_ingredients(self, recipe_id: int) -> List[Tuple[str, str, float]]:
+    def get_all_recipe_ingredients(self, recipe_id: int) -> List[Tuple[str, str, float, str]]:
         return (
             self.session.query(
                 Ingredient.ing_name,
@@ -42,16 +42,6 @@ class SqlAlchemyRepository:
             .join(Ingredient, Ingredient.id == RecipeIngredient.ingredient_id)
             .order_by(Ingredient.ing_name)
             .all()
-        )
-
-    def get_one_recipe_ingredient(self, recipe_id: int, ingredient_id: int) -> Optional[RecipeIngredient]:
-        return (
-            self.session.query(
-                RecipeIngredient
-            )
-            .filter(RecipeIngredient.recipe_id == recipe_id)
-            .filter(RecipeIngredient.ingredient_id == ingredient_id)
-            .one_or_none()
         )
 
     def get_total_ingredients(self, start_date: date, end_date: date, column_name: str) -> List:

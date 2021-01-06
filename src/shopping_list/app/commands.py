@@ -74,7 +74,7 @@ def add_recipe(
             ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name)
             if ingredient is None:
                 ingredient = Ingredient(ing_name, category, unit)
-                uow.append_ingredient(ing_name, category, unit)
+                uow.append_ingredient(ing_name, unit, category)
             recing = RecipeIngredient(ingredient, recipe, amount)
             uow.repo.add(recing)
         uow.commit()

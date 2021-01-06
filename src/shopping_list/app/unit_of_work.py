@@ -16,7 +16,7 @@ class UoW:
         self.repo = SqlAlchemyRepository(self.session)
         # Initialize only the first time the uow is used (and extend it with new ingredients in add_recipe)
         if self.ingredients is None:
-            self.ingredients = self.repo.get_all_ingredients()
+            self.ingredients = self.repo.get_all_ingredients_as_dict()
         return self
 
     def __exit__(self, *args):

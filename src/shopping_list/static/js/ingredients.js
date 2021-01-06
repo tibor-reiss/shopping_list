@@ -3,16 +3,15 @@ $(document).ready(function() {
 		var pattern = new RegExp(/^(ingredients-\d+-)(ing_name)/);
 		var id = $(this).attr('id');
 		if (pattern.test(id)) {
+			if ($(this).val() == '') return;
+
 			var ing_name = $(this).val();
 			stopProcessing = false;
 
 			// Check if duplicate
 			$("#ingredients_section").children('input').each(function() {
-				console.log('START...');
 				loop_id = $(this).attr('id');
-				console.log(loop_id);
 				if (pattern.test(loop_id)) {
-					console.log(id, loop_id);
 					if (id == loop_id) return;
 					if ($(this).val() == ing_name) {
 						alert('There is already a line with ' + ing_name + '!');

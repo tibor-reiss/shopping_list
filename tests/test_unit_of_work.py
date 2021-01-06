@@ -2,7 +2,8 @@ import datetime
 import pytest
 from sqlalchemy.orm import sessionmaker
 
-from shopping_list.app import commands, model, unit_of_work
+from shopping_list.app import commands, model
+from shopping_list.app.unit_of_work import UoW
 
 
 DINNER_NAME = 'Salad'
@@ -10,15 +11,9 @@ LUNCH_NAME = 'Chicken'
 TODAY = datetime.date.today()
 
 
-class UoWSqlite(unit_of_work.UoW):
-    def __init__(self, session_factory: sessionmaker):
-        self.session_factory = session_factory
-        self.ingredients = None
-
-
 @pytest.fixture
 def add_one_meal(sqlite_session_factory):
-    with UoWSqlite(sqlite_session_factory) as uow:
+    with UoW(sqlite_session_factory) as uow:
         lunch = model.Recipe(LUNCH_NAME)
         dinner = model.Recipe(DINNER_NAME)
         uow.repo.add(lunch)
@@ -30,7 +25,7 @@ def add_one_meal(sqlite_session_factory):
 
 
 def test_get_meals(sqlite_session_factory, add_one_meal):
-    test_uow = UoWSqlite(sqlite_session_factory)
+    test_uow = UoW(sqlite_session_factory)
     meals = commands.get_meals(test_uow)
     assert len(meals) == 14
     assert meals[0].date == TODAY
@@ -39,7 +34,7 @@ def test_get_meals(sqlite_session_factory, add_one_meal):
 
 
 def test_add_meal(sqlite_session_factory, add_one_meal):
-    test_uow = UoWSqlite(sqlite_session_factory)
+    test_uow = UoW(sqlite_session_factory)
     tomorrow = TODAY + datetime.timedelta(days=1)
     new_lunch, new_dinner = 'Beef', 'Soup'
     commands.add_meal(test_uow, tomorrow, new_lunch, new_dinner)
