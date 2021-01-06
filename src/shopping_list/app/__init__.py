@@ -28,6 +28,5 @@ from shopping_list.views import home, list, recipe
     should return uow?
       if yes, pass it into views
       OR: create a new class Commands/Events which require an uow -> move views functions here
-  jquery (or in validation?): do not allow same ingredient entry twice (alert box)
   Singleton for uow.ingredients?
 '''
