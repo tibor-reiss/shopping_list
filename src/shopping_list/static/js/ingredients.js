@@ -22,7 +22,11 @@ $(document).ready(function() {
 			})
 			if (stopProcessing) return;
 
-			// Check if ingredient already exists in database
+			// List form can stop here
+			var form_id = $("#ingredients_section").closest('form').attr('id');
+			if (form_id != 'recipe_single') return;
+
+			// Check if ingredient already exists in database and if yes prefill fields
 			var match = pattern.exec(id);
 			var amount_element = '#' + match[1] + 'amount';
 			var unit_element = '#' + match[1] + 'unit';
