@@ -11,4 +11,6 @@
       OR: create a new class Commands/Events which require an uow -> move views functions here
   Singleton for uow.ingredients?
   shopping list + recipe ingredients: also be able to cross out stuff
+      ?add JS to be able to remove rows by clicking?
+    
 '''

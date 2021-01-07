@@ -57,8 +57,6 @@ def add_recipe(
         recipe_title: str,
         recipe_description: Optional[str],
         ingredients: List) -> int:
-    # TODO
-    #        add JS to be able to remove rows by clicking
     with uow:
         recipe = uow.repo.get(Recipe, 'id', recipe_id)
         if recipe is None:
@@ -69,8 +67,6 @@ def add_recipe(
         recipe.ingredients = []  # When saving delete all existing and recreate instead of checking what is not present
         for i in ingredients:
             ing_name, unit, amount, category = itemgetter('ing_name', 'unit', 'amount', 'category')(i.data)
-            if not ing_name:
-                continue
             ingredient = uow.repo.get(Ingredient, 'ing_name', ing_name)
             if ingredient is None:
                 ingredient = Ingredient(ing_name, category, unit)
