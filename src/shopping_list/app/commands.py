@@ -81,6 +81,7 @@ def add_recipe(
 def generate_ingredient_dict(
         sh_list: List[Tuple[str, Union[int, float], str]]
 ) -> Dict[str, Tuple[Union[int, float], str]]:
+    # Remove items with zero amount
     temp = filter(lambda x: x.total is not None, sh_list)
     temp = map(lambda x: (x[0], (x[1], x[2])), temp)
     return dict(temp)
