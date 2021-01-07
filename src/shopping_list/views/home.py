@@ -7,10 +7,13 @@ from shopping_list.app.app import app, uow
 from shopping_list.app.commands import add_meal, get_meals
 
 
+STYLE_DICT = {'class_': 'table_cell'}
+
+
 class MealForm(FlaskForm):
-    date = DateField('date')
-    lunch = StringField('lunch')
-    dinner = StringField('dinner')
+    date = DateField('date', render_kw=STYLE_DICT)
+    lunch = StringField('lunch', render_kw=STYLE_DICT)
+    dinner = StringField('dinner', render_kw=STYLE_DICT)
 
 
 class MealListForm(FlaskForm):
