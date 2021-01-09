@@ -11,6 +11,6 @@
   shopping list + recipe ingredients: also be able to cross out stuff
       ?add JS to be able to remove rows by clicking?    
 
-  !!!fix tests after adding mongodb
-  add redis store
+  add redis store + factory for image store so that unit_of_work is more general
+  !!!make file upload secure
 '''

@@ -2,6 +2,7 @@ import configparser
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from typing import Dict
 
 
 class Config:
@@ -12,7 +13,7 @@ class Config:
     DEBUG = True
 
 
-def get_postgres_connection():
+def get_postgres_connection() -> str:
     config = configparser.ConfigParser()
     config.read(Config.SECRET_CONFIG)
     host = config.get('sql_database', 'HOST', fallback=None)
@@ -24,17 +25,17 @@ def get_postgres_connection():
     return uri
 
 
-def get_mongodb_connection():
+def get_mongodb_connection() -> Dict[str, str]:
     config = configparser.ConfigParser()
     config.read(Config.SECRET_CONFIG)
-    host = config.get('mongodb', 'HOST')
-    port = config.get('mongodb', 'PORT', fallback=5432)
-    db = config.get('mongodb', 'DB')
-    collection = config.get('mongodb', 'COLLECTION')
-    user = config.get('mongodb', 'USER')
-    password = config.get('mongodb', 'PASSWORD')
+    host = config.get('mongodb', 'HOST', fallback=None)
+    port = config.get('mongodb', 'PORT', fallback=27017)
+    db = config.get('mongodb', 'DB', fallback=None)
+    collection = config.get('mongodb', 'COLLECTION', fallback=None)
+    user = config.get('mongodb', 'USER', fallback=None)
+    password = config.get('mongodb', 'PASSWORD', fallback=None)
     uri = f"mongodb://{user}:{password}@{host}:{port}/"
-    return uri, db, collection
+    return {'uri': uri, 'db': db, 'coll': collection}
 
 
 PSQL_SESSION_FACTORY = sessionmaker(bind=create_engine(get_postgres_connection()))

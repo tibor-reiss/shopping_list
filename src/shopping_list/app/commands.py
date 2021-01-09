@@ -63,7 +63,7 @@ def add_recipe(
         recipe_title: str,
         recipe_description: Optional[str],
         ingredients: List,
-        img: FileStorage,
+        img: Optional[FileStorage] = None,
 ) -> int:
     with uow:
         recipe = uow.repo.get(Recipe, 'id', recipe_id)

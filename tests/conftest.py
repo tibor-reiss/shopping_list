@@ -75,3 +75,5 @@ def sqlite_prefill_db(sqlite_session_factory):
             ('ricotta', 'dairy', 'g', 200),
         ]
     )
+    session.commit()
+    session.close()

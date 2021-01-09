@@ -10,7 +10,7 @@ class UoW:
     def __init__(
         self,
         session_factory: sessionmaker = PSQL_SESSION_FACTORY,
-        store_details: Tuple[str, ...] = MONGO_CONNECTION
+        store_details: Dict[str, str] = MONGO_CONNECTION
     ):
         self.session_factory = session_factory
         self.all_ingredients = None
@@ -19,7 +19,7 @@ class UoW:
     def __enter__(self) -> UoW:
         self.session = self.session_factory()
         self.repo = SqlAlchemyRepository(self.session)
-        self.img_store = MongoStore(*self.store_details)
+        self.img_store = MongoStore(self.store_details)
         # Initialize only the first time the uow is used (and extend it with new ingredients in add_recipe)
         if self.all_ingredients is None:
             self.all_ingredients = self.repo.get_all_ingredients_as_dict()

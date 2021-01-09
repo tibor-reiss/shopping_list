@@ -1,8 +1,9 @@
 import datetime
 import pytest
-from typing import Optional
+from typing import Any, Optional
 
 from shopping_list.app import commands, model
+from shopping_list.app.repo import ImageStore
 from shopping_list.app.unit_of_work import UoW
 
 
@@ -12,9 +13,38 @@ TODAY = datetime.date.today()
 TOMORROW = TODAY + datetime.timedelta(days=1)
 
 
+class IngredientDict():
+    def __init__(self, ing_name: str, category: str, unit: Optional[str] = None, amount: Optional[float] = None):
+        self.data = {
+            'ing_name': ing_name,
+            'unit': unit,
+            'category': category,
+            'amount': amount,
+        }
+
+
+class MockStore(ImageStore):
+    def __init__(self, placeholder: Any):
+        super().__init__()
+
+    def get(self, img_id: int):
+        return None
+    
+    def add(self, img:str, img_id: int):
+        pass
+    
+    def close(self):
+        pass
+
+
 @pytest.fixture
-def add_one_meal(sqlite_session_factory):
-    with UoW(sqlite_session_factory) as uow:
+def uow_with_mocked_image_store(sqlite_session_factory, mocker):
+    mocker.patch('shopping_list.app.unit_of_work.MongoStore', MockStore)
+    yield UoW(sqlite_session_factory, None)
+
+
+def add_one_meal(uow):
+    with uow:
         lunch = model.Recipe(LUNCH_NAME)
         dinner = model.Recipe(DINNER_NAME)
         uow.repo.add(lunch)
@@ -25,8 +55,9 @@ def add_one_meal(sqlite_session_factory):
         uow.commit()
 
 
-def test_get_meals(sqlite_session_factory, add_one_meal):
-    test_uow = UoW(sqlite_session_factory)
+def test_get_meals(uow_with_mocked_image_store):
+    test_uow = uow_with_mocked_image_store
+    add_one_meal(test_uow)
     meals = commands.get_meals(test_uow)
     assert len(meals) == 14
     assert meals[0].date == TODAY
@@ -34,8 +65,9 @@ def test_get_meals(sqlite_session_factory, add_one_meal):
     assert meals[0].dinner == DINNER_NAME
 
 
-def test_add_meal(sqlite_session_factory, add_one_meal):
-    test_uow = UoW(sqlite_session_factory)
+def test_add_meal(uow_with_mocked_image_store):
+    test_uow = uow_with_mocked_image_store
+    add_one_meal(test_uow)
     tomorrow = TODAY + datetime.timedelta(days=1)
     new_lunch, new_dinner = 'Beef', 'Soup'
     commands.add_meal(test_uow, tomorrow, new_lunch, new_dinner)
@@ -49,38 +81,29 @@ def test_add_meal(sqlite_session_factory, add_one_meal):
         assert meal.dinner == new_dinner
 
 
-def test_get_recipes(sqlite_session_factory, add_one_meal):
-    test_uow = UoW(sqlite_session_factory)
+def test_get_recipes(uow_with_mocked_image_store):
+    test_uow = uow_with_mocked_image_store
+    add_one_meal(test_uow)
     recipes = commands.get_recipes(test_uow)
     assert len(recipes) == 2
     assert sorted(recipes.keys()) == [LUNCH_NAME, DINNER_NAME]
 
 
-def test_get_recipe_existing(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
-    recipe, ingredients = commands.get_recipe(test_uow, 2)
+def test_get_recipe_existing(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
+    recipe, ingredients, _ = commands.get_recipe(test_uow, 2)
     assert recipe.title == 'Risotto'
     assert len(ingredients) == 5
 
 
-def test_get_recipe_non_existing(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
+def test_get_recipe_non_existing(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     recipe, ingredients = commands.get_recipe(test_uow, 3)
     assert recipe is None
     assert ingredients is None
 
 
-class IngredientDict():
-    def __init__(self, ing_name: str, category: str, unit: Optional[str] = None, amount: Optional[float] = None):
-        self.data = {
-            'ing_name': ing_name,
-            'unit': unit,
-            'category': category,
-            'amount': amount,
-        }
-
-
-def test_add_recipe_new(sqlite_session_factory, sqlite_prefill_db):
+def test_add_recipe_new(uow_with_mocked_image_store, sqlite_prefill_db):
     recipe_id, recipe_title, recipe_description = 3, 'Pancakes', None
     ingredients = [
         IngredientDict('flour', 'side_dish', 'g', 200),
@@ -88,7 +111,7 @@ def test_add_recipe_new(sqlite_session_factory, sqlite_prefill_db):
         IngredientDict('egg', 'other', 'pc', 2),
         IngredientDict('salt', 'spice'),
     ]
-    test_uow = UoW(sqlite_session_factory)
+    test_uow = uow_with_mocked_image_store
     commands.add_recipe(test_uow, recipe_id, recipe_title, recipe_description, ingredients)
     with test_uow:
         recipe = test_uow.session.query(model.Recipe).filter(model.Recipe.title == 'Pancakes').one_or_none()
@@ -96,8 +119,8 @@ def test_add_recipe_new(sqlite_session_factory, sqlite_prefill_db):
         assert len(recipe.ingredients) == 4
 
 
-def test_add_recipe_existing(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
+def test_add_recipe_existing(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     with test_uow:
         recipe = test_uow.session.query(model.Recipe).filter(model.Recipe.id == 1).one_or_none()
         assert recipe is not None
@@ -120,24 +143,24 @@ def test_add_recipe_existing(sqlite_session_factory, sqlite_prefill_db):
         assert len(recipe.ingredients) == 6
 
 
-def test_generate_shopping_list_one_meal(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
+def test_generate_shopping_list_one_meal(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     commands.add_meal(test_uow, TODAY, lunch='Risotto')
     shopping_list = commands.generate_shopping_list(test_uow, TODAY, TODAY)
     assert len(shopping_list) == 4
     assert shopping_list['ricotta'] == (200, 'g')
 
 
-def test_generate_shopping_list_one_meal_lunch_and_dinner(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
+def test_generate_shopping_list_one_meal_lunch_and_dinner(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     commands.add_meal(test_uow, TODAY, lunch='Risotto', dinner='Risotto')
     shopping_list = commands.generate_shopping_list(test_uow, TODAY, TODAY)
     assert len(shopping_list) == 4
     assert shopping_list['ricotta'] == (400, 'g')
 
 
-def test_generate_shopping_list_one_meal_multiple_days(sqlite_session_factory, sqlite_prefill_db):
-    test_uow = UoW(sqlite_session_factory)
+def test_generate_shopping_list_one_meal_multiple_days(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     commands.add_meal(test_uow, TODAY, lunch='Risotto', dinner='Risotto')
     commands.add_meal(test_uow, TOMORROW, lunch='Risotto', dinner='Risotto')
     shopping_list = commands.generate_shopping_list(test_uow, TODAY, TOMORROW)
@@ -145,7 +168,8 @@ def test_generate_shopping_list_one_meal_multiple_days(sqlite_session_factory, s
     assert shopping_list['ricotta'] == (800, 'g')
 
 
-def test_generate_shopping_list_multiple_meals_multiple_days(sqlite_session_factory, sqlite_prefill_db):
+def test_generate_shopping_list_multiple_meals_multiple_days(uow_with_mocked_image_store, sqlite_prefill_db):
+    test_uow = uow_with_mocked_image_store
     recipe_id, recipe_title, recipe_description = 3, 'Zucchini lasagne', None
     ingredients = [
         IngredientDict('lasagne', 'side_dish', 'g', 200),
@@ -155,7 +179,6 @@ def test_generate_shopping_list_multiple_meals_multiple_days(sqlite_session_fact
         IngredientDict('salt', 'spice'),
         IngredientDict('pepper', 'spice'),
     ]
-    test_uow = UoW(sqlite_session_factory)
     commands.add_recipe(test_uow, recipe_id, recipe_title, recipe_description, ingredients)
     commands.add_meal(test_uow, TODAY, lunch='Risotto', dinner='Zucchini lasagne')
     commands.add_meal(test_uow, TOMORROW, lunch='Risotto')
