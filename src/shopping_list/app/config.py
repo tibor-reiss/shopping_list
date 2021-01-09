@@ -24,4 +24,18 @@ def get_postgres_connection():
     return uri
 
 
+def get_mongodb_connection():
+    config = configparser.ConfigParser()
+    config.read(Config.SECRET_CONFIG)
+    host = config.get('mongodb', 'HOST')
+    port = config.get('mongodb', 'PORT', fallback=5432)
+    db = config.get('mongodb', 'DB')
+    collection = config.get('mongodb', 'COLLECTION')
+    user = config.get('mongodb', 'USER')
+    password = config.get('mongodb', 'PASSWORD')
+    uri = f"mongodb://{user}:{password}@{host}:{port}/"
+    return uri, db, collection
+
+
 PSQL_SESSION_FACTORY = sessionmaker(bind=create_engine(get_postgres_connection()))
+MONGO_CONNECTION = get_mongodb_connection()

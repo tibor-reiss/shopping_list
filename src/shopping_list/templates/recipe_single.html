@@ -14,18 +14,27 @@
     .outer_column { width: 50%; float: left; }
     .clear { clear: both; }
     #recipe_description { width: 90%; }
+    img.recipe_image {
+        max-width: 80%;
+        max-height: 80%;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-    <form method="post" action="" id="recipe_single">
+    <form method="post" action="" id="recipe_single" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <p>{{ form.title(style="font-size: 18; font-weight: bold") }}</p>
         <input type="submit" name="submit" value="SAVE RECIPE" />
         <br />
+        <input type="file" name="recipe_image" value="UPLOAD" />
+        <br />
         <div class="container">
             <div class="outer_column">
                 <p>{{ form.description(rows="15", id="recipe_description") }}</p>
+                {% if img %}
+                    <img src="data:;base64,{{ img }}" class="recipe_image"/>
+                {% endif %}
             </div>
             <div class="outer_column" id="ingredients_section">
                 {% for ing in form.ingredients %}

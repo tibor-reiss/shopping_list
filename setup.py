@@ -7,6 +7,7 @@ test_deps = [
     'flask',
     'flask-wtf',
     'psycopg2',
+    'pymongo',
     'pytest-mock',
     'pytest-cov',
     'sqlalchemy',

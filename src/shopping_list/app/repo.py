@@ -1,8 +1,11 @@
-
+import abc
+from base64 import b64encode
 from datetime import date
+from io import BytesIO
+import pymongo
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
-from typing import Optional, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
@@ -18,19 +21,22 @@ class SqlAlchemyRepository:
     def add(self, obj):
         self.session.add(obj)
 
-    def get(self, obj_type, attr_key, attr_value):
+    def get(self, obj_type, attr_key, attr_value) -> Any:
         return self.session.query(obj_type).filter(getattr(obj_type, attr_key) == attr_value).one_or_none()
 
-    def get_all(self, obj_type):
+    def get_all(self, obj_type) -> List[Any]:
         return self.session.query(obj_type).all()
 
-    def get_all_ingredients_as_dict(self):
+    def get_all_ingredients_as_dict(self) -> Dict[str, Dict[str, Union[int, str, None]]]:
         all_ingredients = {}
         for ing in self.session.query(Ingredient).all():
             all_ingredients[ing.ing_name] = {'unit': ing.unit, 'category': ing.category}
         return all_ingredients
 
-    def get_all_recipe_ingredients(self, recipe_id: int) -> List[Tuple[str, str, float, str]]:
+    def get_all_recipe_ingredients(
+        self,
+        recipe_id: int
+    ) -> List[Tuple[str, Optional[str], Optional[float], str]]:
         return (
             self.session.query(
                 Ingredient.ing_name,
@@ -44,7 +50,12 @@ class SqlAlchemyRepository:
             .all()
         )
 
-    def get_total_ingredients(self, start_date: date, end_date: date, column_name: str) -> List:
+    def get_total_ingredients(
+        self,
+        start_date: date,
+        end_date: date,
+        column_name: str
+    ) -> List[Tuple[str, float, str]]:
         t_i = aliased(Ingredient)
         t_r = aliased(Recipe)
         t_ri = aliased(RecipeIngredient)
@@ -69,3 +80,49 @@ class SqlAlchemyRepository:
             .order_by(t_i.category)
             .all()
         )
+
+
+class ImageStore(abc.ABC):
+    def __init__(self):
+        pass
+
+    @abc.abstractmethod
+    def get(self, img_id: int):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add(self, path_to_file: str, img_id: int):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
+    def close(self):
+        raise NotImplementedError
+
+
+class MongoStore(ImageStore):
+    def __init__(self, connection_string: str, database:str, collection: str):
+        super().__init__()
+        self.mongo_client = pymongo.MongoClient(connection_string)
+        self.mongo_db = database
+        self.mongo_collection = collection
+
+    def get_mongo_collection(self):
+        return self.mongo_client[self.mongo_db][self.mongo_collection]
+
+    def get(self, img_id: int) -> Optional[str]:
+        result = self.get_mongo_collection().find_one({'img_id': img_id})
+        if result is None:
+            return None
+        img = BytesIO(result['img'])
+        return b64encode(img.getvalue()).decode('utf-8')
+
+    def add(self, path_to_file: str, img_id: int):
+        image_file = BytesIO(path_to_file.read())
+        self.get_mongo_collection().update_one(
+            {'img_id': img_id},
+            {"$set": {'img_id': img_id, 'img': image_file.getvalue()}},
+            upsert=True
+        )
+
+    def close(self):
+        self.mongo_client.close()

@@ -1,6 +1,7 @@
 from datetime import date as dt
 from operator import itemgetter
 from typing import Dict, List, Optional, Tuple, Union
+from werkzeug.datastructures import  FileStorage
 
 from shopping_list.app.calendar import get_dates
 from shopping_list.app.model import Meal, Ingredient, Recipe, RecipeIngredient
@@ -41,14 +42,19 @@ def get_recipes(uow: UoW) -> Dict[str, int]:
     return recipes
 
 
-def get_recipe(uow: UoW, id: int) -> (Optional[Recipe], Optional[List[Tuple[str, str, float]]]):
+def get_recipe(uow: UoW, id: int) -> (
+        Optional[Recipe],
+        Optional[List[Tuple[str, Optional[str], Optional[float], str]]],
+        Optional[str]
+):
     with uow:
         recipe = uow.repo.get(Recipe, 'id', id)
         if recipe is None:
             return None, None
         ingredients = uow.repo.get_all_recipe_ingredients(id)
         uow.session.expunge(recipe)
-    return recipe, ingredients
+        img = uow.img_store.get(id)
+    return recipe, ingredients, img
 
 
 def add_recipe(
@@ -56,7 +62,9 @@ def add_recipe(
         recipe_id: int,
         recipe_title: str,
         recipe_description: Optional[str],
-        ingredients: List) -> int:
+        ingredients: List,
+        img: FileStorage,
+) -> int:
     with uow:
         recipe = uow.repo.get(Recipe, 'id', recipe_id)
         if recipe is None:
@@ -75,7 +83,10 @@ def add_recipe(
             uow.repo.add(recing)
         uow.commit()
         recipe_id = recipe.id
-    return recipe_id
+        if img:
+            uow.img_store.add(img, recipe_id)
+        img = uow.img_store.get(recipe_id)
+    return recipe_id, img
 
 
 def generate_ingredient_dict(

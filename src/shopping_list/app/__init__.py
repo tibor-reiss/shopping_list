@@ -10,4 +10,7 @@
   Singleton for uow.ingredients?
   shopping list + recipe ingredients: also be able to cross out stuff
       ?add JS to be able to remove rows by clicking?    
+
+  !!!fix tests after adding mongodb
+  add redis store
 '''

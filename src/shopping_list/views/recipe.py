@@ -60,24 +60,32 @@ def view_all_recipes():
     return render_template('recipe_all.html', recipes=recipes)
 
 
-@app.route('/recipe/<recipe_id>', methods=['GET', 'POST'])
+@app.route('/recipe/<int:recipe_id>', methods=['GET', 'POST'])
 def view_recipe(recipe_id):
     if request.method == 'GET':
-        recipe, ingredients = get_recipe(uow, recipe_id)
+        recipe, ingredients, img = get_recipe(uow, recipe_id)
         if recipe is None:
             abort(404)
         data = {'title': recipe.title, 'description': recipe.description, 'ingredients': ingredients}
         form = RecipeForm(data=data)
     elif request.method == 'POST':
+        img = request.files['recipe_image']
         form = RecipeForm(request.form)
         form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
         if not form.validate_on_submit():
             flash_messages(form)
+            _, _, img = get_recipe(uow, recipe_id)
         else:
             recipe_title = form.data['title']
             recipe_description = form.data['description']
-            _ = add_recipe(uow, recipe_id, recipe_title, recipe_description, form.ingredients.entries)
-    return render_template('recipe_single.html', form=form, recipe_id=recipe_id, ingredients=uow.ingredients)
+            _, img = add_recipe(uow, recipe_id, recipe_title, recipe_description, form.ingredients.entries, img)
+    return render_template(
+        'recipe_single.html',
+        form=form,
+        recipe_id=recipe_id,
+        ingredients=uow.all_ingredients,
+        img=img
+    )
 
 
 @app.route('/recipe/new', methods=['GET', 'POST'])
@@ -85,15 +93,28 @@ def new_recipe():
     if request.method == 'GET':
         data = {'title': None, 'description': None, 'ingredients': []}
         form = RecipeForm(data=data)
-        return render_template('recipe_single.html', form=form, recipe_id='New', ingredients=uow.ingredients)
+        return render_template(
+            'recipe_single.html',
+            form=form,
+            recipe_id='New',
+            ingredients=uow.all_ingredients,
+            img=None
+        )
     elif request.method == 'POST':
+        img = request.files['recipe_image']
         form = RecipeForm(request.form)
         form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
         if not form.validate_on_submit():
             flash_messages(form)
-            return render_template('recipe_single.html', form=form, recipe_id='New', ingredients=uow.ingredients)
+            return render_template(
+                'recipe_single.html',
+                form=form,
+                recipe_id='New',
+                ingredients=uow.all_ingredients,
+                img=None
+            )
         else:
             recipe_title = form.data['title']
             recipe_description = form.data['description']
-            recipe_id = add_recipe(uow, None, recipe_title, recipe_description, form.ingredients.entries)
+            recipe_id, _ = add_recipe(uow, None, recipe_title, recipe_description, form.ingredients.entries, img)
             return redirect(url_for('view_recipe', recipe_id=recipe_id))
