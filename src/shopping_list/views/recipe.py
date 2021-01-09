@@ -1,6 +1,8 @@
+from __future__ import annotations
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
-from typing import Optional
+import imghdr
+from typing import Any, Optional, Tuple
 from wtforms import (
     FieldList,
     FloatField,
@@ -25,6 +27,19 @@ def validate_not_empty(field_name: Optional[str] = None):
     return _validate
 
 
+def validate_image(img: Any) -> bool:
+    if not img:
+        return True
+    img_header = img.read(512)
+    img.seek(0)
+    img_format = imghdr.what(None, img_header)
+    if not img_format:
+        return False
+    if img_format not in app.config['ALLOWED_IMAGE_EXTENSIONS']:
+        return False
+    return True
+
+
 class IngredientForm(FlaskForm):
     ing_name = StringField('ing_name')
     unit = StringField('unit')
@@ -47,6 +62,17 @@ class RecipeForm(FlaskForm):
     ingredients = FieldList(FormField(IngredientForm))
 
 
+def process_request(request) -> Tuple[FileStorage, RecipeForm]:
+    print(type(request))
+    img = request.files['recipe_image']
+    if not validate_image(img):
+        abort(404, 'Invalid file format for image.')
+    form = RecipeForm(request.form)
+    form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
+    print(type(img), type(form))
+    return img, form
+
+
 def flash_messages(form):
     for _, e in form.errors.items():
         for i in e:
@@ -65,13 +91,11 @@ def view_recipe(recipe_id):
     if request.method == 'GET':
         recipe, ingredients, img = get_recipe(uow, recipe_id)
         if recipe is None:
-            abort(404)
+            abort(404, 'Invalid recipe id.')
         data = {'title': recipe.title, 'description': recipe.description, 'ingredients': ingredients}
         form = RecipeForm(data=data)
     elif request.method == 'POST':
-        img = request.files['recipe_image']
-        form = RecipeForm(request.form)
-        form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
+        img, form = process_request(request)
         if not form.validate_on_submit():
             flash_messages(form)
             _, _, img = get_recipe(uow, recipe_id)
@@ -101,9 +125,7 @@ def new_recipe():
             img=None
         )
     elif request.method == 'POST':
-        img = request.files['recipe_image']
-        form = RecipeForm(request.form)
-        form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
+        img, form = process_request(request)
         if not form.validate_on_submit():
             flash_messages(form)
             return render_template(

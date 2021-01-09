@@ -91,7 +91,7 @@ class ImageStore(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add(self, img: str, img_id: int):
+    def add(self, img: Any, img_id: int):
         raise NotImplementedError
     
     @abc.abstractmethod
@@ -116,7 +116,8 @@ class MongoStore(ImageStore):
         img = BytesIO(result['img'])
         return b64encode(img.getvalue()).decode('utf-8')
 
-    def add(self, img: str, img_id: int):
+    def add(self, img: Any, img_id: int):
+        img.seek(0)
         image_file = BytesIO(img.read())
         self.get_mongo_collection().update_one(
             {'img_id': img_id},

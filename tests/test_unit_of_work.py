@@ -30,7 +30,7 @@ class MockStore(ImageStore):
     def get(self, img_id: int):
         return None
     
-    def add(self, img:str, img_id: int):
+    def add(self, img: Any, img_id: int):
         pass
     
     def close(self):
@@ -98,7 +98,7 @@ def test_get_recipe_existing(uow_with_mocked_image_store, sqlite_prefill_db):
 
 def test_get_recipe_non_existing(uow_with_mocked_image_store, sqlite_prefill_db):
     test_uow = uow_with_mocked_image_store
-    recipe, ingredients = commands.get_recipe(test_uow, 3)
+    recipe, ingredients, _ = commands.get_recipe(test_uow, 3)
     assert recipe is None
     assert ingredients is None
 

@@ -50,7 +50,7 @@ def get_recipe(uow: UoW, id: int) -> (
     with uow:
         recipe = uow.repo.get(Recipe, 'id', id)
         if recipe is None:
-            return None, None
+            return None, None, None
         ingredients = uow.repo.get_all_recipe_ingredients(id)
         uow.session.expunge(recipe)
         img = uow.img_store.get(id)
