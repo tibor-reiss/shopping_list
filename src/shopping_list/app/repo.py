@@ -3,6 +3,7 @@ from base64 import b64encode
 from datetime import date
 from io import BytesIO
 import pymongo
+import redis
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -12,6 +13,7 @@ from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
 EXCLUDE_INGREDIENT = ['water', ]
 EXCLUDE_CATEGORY = ['spice', ]
+IMG_STORE_ID_NAME = 'img_id'
 
 
 class SqlAlchemyRepository:
@@ -110,7 +112,7 @@ class MongoStore(ImageStore):
         return self.mongo_client[self.mongo_db][self.mongo_collection]
 
     def get(self, img_id: int) -> Optional[str]:
-        result = self.get_mongo_collection().find_one({'img_id': img_id})
+        result = self.get_mongo_collection().find_one({IMG_STORE_ID_NAME: img_id})
         if result is None:
             return None
         img = BytesIO(result['img'])
@@ -120,10 +122,35 @@ class MongoStore(ImageStore):
         img.seek(0)
         image_file = BytesIO(img.read())
         self.get_mongo_collection().update_one(
-            {'img_id': img_id},
-            {"$set": {'img_id': img_id, 'img': image_file.getvalue()}},
+            {IMG_STORE_ID_NAME: img_id},
+            {"$set": {IMG_STORE_ID_NAME: img_id, 'img': image_file.getvalue()}},
             upsert=True
         )
 
     def close(self):
         self.mongo_client.close()
+
+
+class RedisStore(ImageStore):
+    def __init__(self, config_dict: Dict[str, str]):
+        super().__init__()
+        self.redis_client = redis.StrictRedis(
+            host=config_dict['host'],
+            port=config_dict['port'],
+            password=config_dict['password'],
+        )
+    
+    def get(self, img_id: int) -> Optional[str]:
+        result = self.redis_client.get(IMG_STORE_ID_NAME + str(img_id))
+        if result is None:
+            return None
+        img = BytesIO(result)
+        return b64encode(img.getvalue()).decode('utf-8')
+    
+    def add(self, img: Any, img_id: int):
+        img.seek(0)
+        image_file = BytesIO(img.read())
+        self.redis_client.set(IMG_STORE_ID_NAME + str(img_id), image_file.getvalue())
+
+    def close(self):
+        pass

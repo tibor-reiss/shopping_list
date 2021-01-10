@@ -39,7 +39,8 @@ class MockStore(ImageStore):
 
 @pytest.fixture
 def uow_with_mocked_image_store(sqlite_session_factory, mocker):
-    mocker.patch('shopping_list.app.unit_of_work.MongoStore', MockStore)
+    #mocker.patch('shopping_list.app.unit_of_work.MongoStore', MockStore)
+    mocker.patch('shopping_list.app.unit_of_work.RedisStore', MockStore)
     yield UoW(sqlite_session_factory, None)
 
 

@@ -63,13 +63,11 @@ class RecipeForm(FlaskForm):
 
 
 def process_request(request) -> Tuple[FileStorage, RecipeForm]:
-    print(type(request))
     img = request.files['recipe_image']
     if not validate_image(img):
         abort(404, 'Invalid file format for image.')
     form = RecipeForm(request.form)
     form.ingredients.entries = [i for i in form.ingredients.entries if i.data['ing_name']]
-    print(type(img), type(form))
     return img, form
 
 

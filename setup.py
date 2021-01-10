@@ -10,6 +10,7 @@ test_deps = [
     'pymongo',
     'pytest-mock',
     'pytest-cov',
+    'redis',
     'sqlalchemy',
 ]
 

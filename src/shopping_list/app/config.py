@@ -40,5 +40,15 @@ def get_mongodb_connection() -> Dict[str, str]:
     return {'uri': uri, 'db': db, 'coll': collection}
 
 
+def get_redis_connection() -> Dict[str, str]:
+    config = configparser.ConfigParser()
+    config.read(Config.SECRET_CONFIG)
+    host = config.get('redis', 'HOST', fallback=None)
+    port = config.get('redis', 'PORT', fallback=6379)
+    password = config.get('redis', 'PASSWORD', fallback=None)
+    return {'host': host, 'port': port, 'password': password}
+
+
 PSQL_SESSION_FACTORY = sessionmaker(bind=create_engine(get_postgres_connection()))
 MONGO_CONNECTION = get_mongodb_connection()
+REDIS_CONNECTION = get_redis_connection()
