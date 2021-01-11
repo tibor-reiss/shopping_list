@@ -1,11 +1,15 @@
+from __future__ import annotations
 from datetime import date as dt
 from operator import itemgetter
-from typing import Dict, List, Optional, Tuple, Union
-from werkzeug.datastructures import  FileStorage
+import typing
 
 from shopping_list.app.calendar import get_dates
 from shopping_list.app.model import Meal, Ingredient, Recipe, RecipeIngredient
 from shopping_list.app.unit_of_work import UoW
+
+if typing.TYPE_CHECKING:
+    from typing import Dict, List, Optional, Tuple, Union
+    from werkzeug.datastructures import FileStorage
 
 
 def get_meals(uow: UoW) -> List[Meal]:

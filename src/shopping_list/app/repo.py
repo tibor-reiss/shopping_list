@@ -13,7 +13,6 @@ from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
 EXCLUDE_INGREDIENT = ['water', ]
 EXCLUDE_CATEGORY = ['spice', ]
-IMG_STORE_ID_NAME = 'img_id'
 
 
 class SqlAlchemyRepository:
@@ -85,6 +84,8 @@ class SqlAlchemyRepository:
 
 
 class ImageStore(abc.ABC):
+    IMG_STORE_ID_NAME = 'img_id'
+
     def __init__(self):
         pass
 
@@ -95,7 +96,7 @@ class ImageStore(abc.ABC):
     @abc.abstractmethod
     def add(self, img: Any, img_id: int):
         raise NotImplementedError
-    
+
     @abc.abstractmethod
     def close(self):
         raise NotImplementedError
@@ -112,7 +113,7 @@ class MongoStore(ImageStore):
         return self.mongo_client[self.mongo_db][self.mongo_collection]
 
     def get(self, img_id: int) -> Optional[str]:
-        result = self.get_mongo_collection().find_one({IMG_STORE_ID_NAME: img_id})
+        result = self.get_mongo_collection().find_one({self.IMG_STORE_ID_NAME: img_id})
         if result is None:
             return None
         img = BytesIO(result['img'])
@@ -122,8 +123,8 @@ class MongoStore(ImageStore):
         img.seek(0)
         image_file = BytesIO(img.read())
         self.get_mongo_collection().update_one(
-            {IMG_STORE_ID_NAME: img_id},
-            {"$set": {IMG_STORE_ID_NAME: img_id, 'img': image_file.getvalue()}},
+            {self.IMG_STORE_ID_NAME: img_id},
+            {"$set": {self.IMG_STORE_ID_NAME: img_id, 'img': image_file.getvalue()}},
             upsert=True
         )
 
@@ -139,18 +140,27 @@ class RedisStore(ImageStore):
             port=config_dict['port'],
             password=config_dict['password'],
         )
-    
+
     def get(self, img_id: int) -> Optional[str]:
-        result = self.redis_client.get(IMG_STORE_ID_NAME + str(img_id))
+        result = self.redis_client.get(self.IMG_STORE_ID_NAME + str(img_id))
         if result is None:
             return None
         img = BytesIO(result)
         return b64encode(img.getvalue()).decode('utf-8')
-    
+
     def add(self, img: Any, img_id: int):
         img.seek(0)
         image_file = BytesIO(img.read())
-        self.redis_client.set(IMG_STORE_ID_NAME + str(img_id), image_file.getvalue())
+        self.redis_client.set(self.IMG_STORE_ID_NAME + str(img_id), image_file.getvalue())
 
     def close(self):
         pass
+
+
+def create_img_store(img_store_name: str, config_dict: Dict[str, str]) -> ImageStore:
+    if img_store_name == 'mongodb':
+        return MongoStore(config_dict)
+    elif img_store_name == 'redis':
+        return RedisStore(config_dict)
+    else:
+        raise RuntimeError(f'The specified image store ({img_store_name}) does not exist!')

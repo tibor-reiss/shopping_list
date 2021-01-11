@@ -2,7 +2,7 @@ from __future__ import annotations
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 import imghdr
-from typing import Any, Optional, Tuple
+import typing
 from wtforms import (
     FieldList,
     FloatField,
@@ -16,6 +16,10 @@ from wtforms import (
 from shopping_list.app.app import app, uow
 from shopping_list.app.model import CATEGORIES
 from shopping_list.app.commands import add_recipe, get_recipe, get_recipes
+
+if typing.TYPE_CHECKING:
+    from typing import Any, Optional, Tuple
+    from werkzeug.datastructures import FileStorage
 
 
 def validate_not_empty(field_name: Optional[str] = None):
