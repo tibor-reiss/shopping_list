@@ -5,6 +5,11 @@
 
 {% block content %}
     <h1>RECIPES</h1>
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <input type="text" name="search_ings" />
+        <input type="submit" name="submit" value="SEARCH" />
+    </form>
     {% for title, id in recipes|dictsort(case_sensitive=False) %}
         <p><a href={{ url_for('view_recipe', recipe_id=id) }} style="font-family: courier">{{ title }}</a></p>
     {% endfor %}

@@ -15,7 +15,7 @@ from wtforms import (
 
 from shopping_list.app.app import app, uow
 from shopping_list.app.model import CATEGORIES
-from shopping_list.app.commands import add_recipe, get_recipe, get_recipes
+from shopping_list.app.commands import add_recipe, get_recipe, get_recipes, get_recipes_filtered_by_ings
 
 if typing.TYPE_CHECKING:
     from typing import Any, Optional, Tuple
@@ -31,6 +31,16 @@ def validate_not_empty(field_name: Optional[str] = None):
     return _validate
 
 
+def validate_search_ingredients():
+    def _validate(form, field):
+        try:
+            field.data.split(',')
+        except (AttributeError, ValueError):
+            msg = 'Invalid search term for ingredients, please use a comma separated list'
+            raise validators.ValidationError(msg)
+    return _validate
+
+
 def validate_image(img: Any) -> bool:
     if not img:
         return True
@@ -42,6 +52,10 @@ def validate_image(img: Any) -> bool:
     if img_format not in app.config['ALLOWED_IMAGE_EXTENSIONS']:
         return False
     return True
+
+
+class SearchRecipeForm(FlaskForm):
+    search_ings = StringField('search_ings', [validate_search_ingredients()])
 
 
 class IngredientForm(FlaskForm):
@@ -82,10 +96,20 @@ def flash_messages(form):
                 flash(i)
 
 
-@app.route('/recipe', methods=['GET'])
+@app.route('/recipe', methods=['GET', 'POST'])
 def view_all_recipes():
-    recipes = get_recipes(uow)
-    return render_template('recipe_all.html', recipes=recipes)
+    if request.method == 'GET':
+        form = SearchRecipeForm()
+        recipes = get_recipes(uow)
+    elif request.method == 'POST':
+        form = SearchRecipeForm(request.form)
+        if not form.validate_on_submit():
+            flash_messages(form)
+            recipes = get_recipes(uow)
+        else:
+            search_ings = list(filter(lambda x: (x), map(str.strip, form.data['search_ings'].split(','))))
+            recipes = get_recipes_filtered_by_ings(uow, search_ings)
+    return render_template('recipe_all.html', recipes=recipes, form=form)
 
 
 @app.route('/recipe/<int:recipe_id>', methods=['GET', 'POST'])

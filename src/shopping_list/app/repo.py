@@ -81,6 +81,23 @@ class SqlAlchemyRepository:
             .order_by(t_i.category)
             .all()
         )
+    
+    def get_recipe_aggregated_ingredients(self):
+        t_i = aliased(Ingredient)
+        t_r = aliased(Recipe)
+        t_ri = aliased(RecipeIngredient)
+        return (
+            self.session.query(
+                t_r.id,
+                t_r.title,
+                func.array_agg(t_i.ing_name).label('ings')
+            )
+            .join(t_ri, t_ri.recipe_id == t_r.id, isouter=True)
+            .join(t_i, t_ri.ingredient_id == t_i.id, isouter=True)
+            .group_by(t_r.id)
+            .group_by(t_r.title)
+            .all()
+        )
 
 
 class ImageStore(abc.ABC):
