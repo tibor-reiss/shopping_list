@@ -1,20 +1,14 @@
-import setuptools
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
-    'flask',
-    'flask-wtf',
-    'psycopg2',
-    'pymongo',
     'pytest-mock',
     'pytest-cov',
-    'redis',
-    'sqlalchemy',
 ]
 
-setuptools.setup(
+setup(
     name="shopping_list",
     version="1.0.0",
     author="Tibor Reiss",
@@ -28,13 +22,20 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    packages=setuptools.find_packages('src'),
+    packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
-    extras_require={'test': test_deps, },
+    extras_require={
+        'for_testing': 'tox',
+        'run_tests': test_deps,
+    },
     install_requires=[
-        'wheel',
+        'flask',
+        'flask-wtf',
+        'psycopg2',
+        'pymongo',
+        'redis',
+        'sqlalchemy',
     ],
-    tests_require=test_deps,
     python_requires='>=3.8',
 )

@@ -1,6 +1,0 @@
-from shopping_list.app import orm, model, config, repo
-from datetime import date
-orm.start_mappers()
-r = repo.SqlAlchemyRepository()
-m = model.Meal(date(2020, 12, 19), 'asdf', 'asdfasdf')
-re = model.Recipe('bbasdf')

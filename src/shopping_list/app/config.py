@@ -10,7 +10,6 @@ class Config:
     if not SECRET_CONFIG:
         raise RuntimeError("Missing environment variable SECRET_CONFIG")
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'very-difficult-to-guess-secret-key'
-    DEBUG = True
     MAX_CONTENT_LENGTH = 1024 * 512  # 0.5 MB
     ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png']
 
