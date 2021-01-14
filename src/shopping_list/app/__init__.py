@@ -9,7 +9,4 @@
   Singleton for uow.ingredients?
   shopping list + recipe ingredients: also be able to cross out stuff
       ?add JS to be able to remove rows by clicking?    
-
-  shopping list: do not overwrite dates after rendering
-
 '''

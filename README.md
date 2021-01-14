@@ -14,7 +14,7 @@ flask run
 For a secret config file example see: config/secret_config_example
 
 ## Tests
-Require python3.8 and python3.9
+Requires python3.8 and python3.9
 ```bash
 pip3 install .[for_testing]
 tox -r

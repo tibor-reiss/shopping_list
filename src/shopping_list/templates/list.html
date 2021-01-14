@@ -22,19 +22,13 @@
     	<div class="container">
             <div class="outer_column">
                 <div class="inner_column">
-                    <label for="start_date">Start date</label>
-                    <input type="date" id="start_date" name="start_date" value={{ start_date }} />
-                    <script>
-                    	document.getElementById('start_date').value = new Date().toISOString().slice(0, 10);
-                    </script>
+                    <label for='start_date'>Start date</label>
+                    {{ form.start_date }}
                     <br />
                 </div>
                 <div class="inner_column">
-                    <label for="end_date">End date</label>
-                    <input type="date" id="end_date" name="end_date" value ={{ end_date }} />
-                    <script>
-                    	document.getElementById('end_date').value = new Date().toISOString().slice(0, 10);
-                    </script>
+                    <label for='start_date'>End date</label>
+                    {{ form.end_date }}
                 </div>
                 <div class="inner_column">
                 	<input type="submit" value="GET LIST" />
