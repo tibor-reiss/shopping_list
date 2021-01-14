@@ -2,9 +2,26 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
+from shopping_list.app.app import create_app
 from shopping_list.app.model import Base
+from shopping_list.app.repo import ImageStore
+from shopping_list.app.unit_of_work import UoW
+
+
+class MockStore(ImageStore):
+    def __init__(self, placeholder: Any):
+        super().__init__()
+
+    def get(self, img_id: int):
+        return None
+
+    def add(self, img: Any, img_id: int):
+        pass
+
+    def close(self):
+        pass
 
 
 def insert_ingredient(session: Session, ing_name: str, category: str, unit: Optional[str] = None) -> int:
@@ -77,3 +94,24 @@ def sqlite_prefill_db(sqlite_session_factory):
     )
     session.commit()
     session.close()
+
+
+@pytest.fixture
+def uow_with_mocked_image_store(sqlite_session_factory, mocker):
+    mocker.patch('shopping_list.app.unit_of_work.create_img_store', return_value=MockStore(None))
+    yield UoW(sqlite_session_factory, None, None)
+
+
+@pytest.fixture
+def app(uow_with_mocked_image_store):
+    app = create_app({
+        'TESTING': True,
+        'SECRET_KEY': 'random-key-for-testing',
+    })
+    app.uow = uow_with_mocked_image_store
+    yield app
+
+
+@pytest.fixture
+def client(app):
+    yield app.test_client()

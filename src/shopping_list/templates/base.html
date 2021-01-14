@@ -8,10 +8,10 @@
 </head>
 <body>
     <div>Go to:
-        <a href="{{ url_for('view_index') }}">Home</a> |
-        <a href="{{ url_for('view_list') }}">List</a> |
-        <a href="{{ url_for('view_all_recipes') }}">Recipe</a> |
-        <a href="{{ url_for('new_recipe') }}">NewRecipe</a>
+        <a href="{{ url_for('home.view_index') }}">Home</a> |
+        <a href="{{ url_for('list.view_list') }}">List</a> |
+        <a href="{{ url_for('recipe.view_all_recipes') }}">Recipe</a> |
+        <a href="{{ url_for('recipe.new_recipe') }}">NewRecipe</a>
     </div>
     <hr />
     {% with messages = get_flashed_messages() %}

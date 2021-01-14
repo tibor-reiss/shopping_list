@@ -1,10 +1,12 @@
 from datetime import date
-from flask import render_template, request
+from flask import Blueprint, current_app, render_template, request
 from flask_wtf import FlaskForm
 from wtforms.fields.html5 import DateField
 
-from shopping_list.app.app import app, uow
 from shopping_list.app.commands import generate_shopping_list
+
+
+BP = Blueprint('list', __name__, url_prefix='')
 
 
 class ShoppingListForm(FlaskForm):
@@ -12,14 +14,14 @@ class ShoppingListForm(FlaskForm):
     end_date = DateField('end_date', default=date.today)
 
 
-@app.route('/list', methods=['GET', 'POST'])
+@BP.route('/list', methods=['GET', 'POST'])
 def view_list():
     if request.method == 'GET':
         form = ShoppingListForm()
         shopping_list = None
     elif request.method == 'POST':
         form = ShoppingListForm(request.form)
-        shopping_list = generate_shopping_list(uow, form.start_date.data, form.end_date.data)
+        shopping_list = generate_shopping_list(current_app.uow, form.start_date.data, form.end_date.data)
     return render_template(
         'list.html',
         form=form,
