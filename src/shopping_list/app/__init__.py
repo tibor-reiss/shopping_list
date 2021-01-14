@@ -11,4 +11,5 @@
       ?add JS to be able to remove rows by clicking?    
 
   shopping list: do not overwrite dates after rendering
+
 '''

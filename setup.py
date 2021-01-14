@@ -26,6 +26,7 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     extras_require={
+        'flake8': 'flake8',
         'for_testing': 'tox',
         'run_tests': test_deps,
     },

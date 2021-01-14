@@ -49,7 +49,8 @@ def get_recipes(uow: UoW) -> Dict[str, int]:
 def get_recipes_filtered_by_ings(uow: UoW, ings_to_filter: List[str]) -> Dict[str, int]:
     with uow:
         recipes = uow.repo.get_recipe_aggregated_ingredients()
-        filtered_recipes = [(recipe.title, recipe.id) for recipe in recipes
+        filtered_recipes = [
+            (recipe.title, recipe.id) for recipe in recipes
             if all(ing in recipe.ings for ing in ings_to_filter)
         ]
     return dict(filtered_recipes)

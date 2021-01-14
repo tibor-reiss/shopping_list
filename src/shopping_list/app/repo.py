@@ -81,7 +81,7 @@ class SqlAlchemyRepository:
             .order_by(t_i.category)
             .all()
         )
-    
+
     def get_recipe_aggregated_ingredients(self):
         t_i = aliased(Ingredient)
         t_r = aliased(Recipe)
