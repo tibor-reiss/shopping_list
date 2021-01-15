@@ -31,17 +31,18 @@
                     {{ form.end_date }}
                 </div>
                 <div class="inner_column">
-                	<input type="submit" value="GET LIST" />
+                	<input type="submit" value="GET LIST">
                 </div>
             </div>
             <div class="outer_column" id="ingredients_section">
                 {% if shopping_list is not none %}
-                    {% set counter = 0 %}
+                    {% set counter = namespace(value=0) %}
                     {% for key, value in shopping_list.items() %}
-                        <input type="text" value="{{ key }}" size=15 id="ingredients-{{ counter }}-ing_name" /><!--
-                        -->&nbsp<input type="text" value="{{ value[0] }}" size=5 style="text-align: right" id="ingredients-{{ counter }}-amount" /><!--
-                        -->&nbsp<input type="text" value="{{ value[1] }}" size=5 id="ingredients-{{ counter }}-unit" />
+                        <input type="text" value="{{ key }}" size=15 id="ingredients-{{ counter.value }}-ing_name"><!--
+                        -->&nbsp<input type="text" value="{{ value[0] }}" size=5 style="text-align: right" id="ingredients-{{ counter.value }}-amount"><!--
+                        -->&nbsp<input type="text" value="{{ value[1] }}" size=5 id="ingredients-{{ counter.value }}-unit">
                         <br />
+                        {% set counter.value = counter.value + 1 %}
                     {% endfor %}
                 {% endif %}
             </div>

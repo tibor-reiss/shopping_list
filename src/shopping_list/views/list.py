@@ -20,6 +20,11 @@ def view_list():
         form = ShoppingListForm()
         shopping_list = None
     elif request.method == 'POST':
+        print('***')
+        print(request)
+        print('***')
+        print(request.form)
+        print('***')
         form = ShoppingListForm(request.form)
         shopping_list = generate_shopping_list(current_app.uow, form.start_date.data, form.end_date.data)
     return render_template(

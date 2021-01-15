@@ -4,6 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 test_deps = [
+    'beautifulsoup4',
+    'lxml',
     'pytest-mock',
     'pytest-cov',
 ]
