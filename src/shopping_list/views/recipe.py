@@ -73,7 +73,7 @@ class IngredientForm(FlaskForm):
 
     # Needed because of FormField in RecipeForm which would require another csrf token
     def __init__(self, csrf_enabled=False, *args, **kwargs):
-        super(IngredientForm, self).__init__(csrf_enabled=csrf_enabled, *args, **kwargs)
+        super(IngredientForm, self).__init__(meta={'csrf': csrf_enabled}, *args, **kwargs)
 
 
 class RecipeForm(FlaskForm):
@@ -110,7 +110,10 @@ def view_all_recipes():
             recipes = get_recipes(current_app.uow)
         else:
             search_ings = list(filter(lambda x: (x), map(str.strip, form.data['search_ings'].split(','))))
-            recipes = get_recipes_filtered_by_ings(uow, search_ings)
+            if not search_ings:
+                recipes = get_recipes(current_app.uow)
+            else:
+                recipes = get_recipes_filtered_by_ings(current_app.uow, search_ings)
     return render_template('recipe_all.html', recipes=recipes, form=form)
 
 

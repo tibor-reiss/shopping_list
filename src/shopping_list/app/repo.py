@@ -92,8 +92,8 @@ class SqlAlchemyRepository:
                 t_r.title,
                 func.array_agg(t_i.ing_name).label('ings')
             )
-            .join(t_ri, t_ri.recipe_id == t_r.id, isouter=True)
-            .join(t_i, t_ri.ingredient_id == t_i.id, isouter=True)
+            .join(t_ri, t_ri.recipe_id == t_r.id)
+            .join(t_i, t_ri.ingredient_id == t_i.id)
             .group_by(t_r.id)
             .group_by(t_r.title)
             .all()
