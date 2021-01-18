@@ -100,6 +100,7 @@ def flash_messages(form):
 
 @BP.route('/recipe', methods=['GET', 'POST'])
 def view_all_recipes():
+    status_code = 200
     if request.method == 'GET':
         form = SearchRecipeForm()
         recipes = get_recipes(current_app.uow)
@@ -108,17 +109,19 @@ def view_all_recipes():
         if not form.validate_on_submit():
             flash_messages(form)
             recipes = get_recipes(current_app.uow)
+            status_code = 422
         else:
             search_ings = list(filter(lambda x: (x), map(str.strip, form.data['search_ings'].split(','))))
             if not search_ings:
                 recipes = get_recipes(current_app.uow)
             else:
                 recipes = get_recipes_filtered_by_ings(current_app.uow, search_ings)
-    return render_template('recipe_all.html', recipes=recipes, form=form)
+    return render_template('recipe_all.html', recipes=recipes, form=form), status_code
 
 
 @BP.route('/recipe/<int:recipe_id>', methods=['GET', 'POST'])
 def view_recipe(recipe_id):
+    status_code = 200
     if request.method == 'GET':
         recipe, ingredients, img = get_recipe(current_app.uow, recipe_id)
         if recipe is None:
@@ -130,6 +133,7 @@ def view_recipe(recipe_id):
         if not form.validate_on_submit():
             flash_messages(form)
             _, _, img = get_recipe(current_app.uow, recipe_id)
+            status_code = 422
         else:
             recipe_title = form.data['title']
             recipe_description = form.data['description']
@@ -140,7 +144,7 @@ def view_recipe(recipe_id):
         recipe_id=recipe_id,
         ingredients=current_app.uow.all_ingredients,
         img=img
-    )
+    ), status_code
 
 
 @BP.route('/recipe/new', methods=['GET', 'POST'])
