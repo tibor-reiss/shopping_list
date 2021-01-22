@@ -6,10 +6,19 @@ mkdir <your_shopping_list_folder>
 cd <your_shopping_list_folder>
 git clone git@github.com:tibor-reiss/shopping_list.git .
 pip3 install .
+```
+Running in dev environment
+```bash
 export FLASK_APP=<your_venv>/lib/<python_version>/site-packages/shopping_list/app/app
 (optional) export FLASK_ENV=development
 export SECRET_CONFIG=<your_secret_config_path_and_file_name>
 flask run
+```
+Running in production(-like) environment
+```bash
+pip install gunicorn
+export SECRET_CONFIG=<your_secret_config_path_and_file_name>
+gunicorn -b localhost:<port> -w <workers> src.shopping_list.app.wsgi:app
 ```
 For a secret config file example see: config/secret_config_example
 
