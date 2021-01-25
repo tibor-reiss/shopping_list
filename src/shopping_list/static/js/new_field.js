@@ -24,7 +24,7 @@ function add_field(result) {
         var field_unit = "<input type='text' size='5' name='ingredients-" + fields + "-unit' id='ingredients-" + fields + "-unit'>"
         var field_category = ''
         if (result.form_id == "recipe_single" ) {
-            field_category = "<select name='ingredients-" + fields + "-category' id='ingredients-" + fields + "-category'><option value='fruit'>fruit</option><option value='vegetable'>vegetable</option><option value='spice'>spice</option><option value='meat'>meat</option><option value='bread'>bread</option><option value='dairy'>dairy</option><option value='exotic'>exotic</option><option value='side_dish'>side_dish</option><option value='nut'>nut</option><option hidden disabled selected value></option></select>"
+            field_category = "<select name='ingredients-" + fields + "-category' id='ingredients-" + fields + "-category'><option value='fruit'>fruit</option><option value='vegetable'>vegetable</option><option value='spice'>spice</option><option value='meat'>meat</option><option value='bread'>bread</option><option value='dairy'>dairy</option><option value='exotic'>exotic</option><option value='side_dish'>side_dish</option><option value='nuts'>nuts</option><option value='fish'>fish</option><option value='oils'>oils</option><option value='canned_food'>canned_food</option><option value='grains'>grains</option><option value='sweets'>sweets</option><option hidden disabled selected value></option></select>"
         }
         var new_input = field_ing_name + "\xa0" + field_amount + "\xa0" + field_unit + "\xa0" + field_category + "<br />";
         $(new_input).appendTo("#ingredients_section");                

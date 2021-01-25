@@ -12,7 +12,7 @@ from shopping_list.app.model import Ingredient, Meal, Recipe, RecipeIngredient
 
 
 EXCLUDE_INGREDIENT = ['water', ]
-EXCLUDE_CATEGORY = ['spice', ]
+EXCLUDE_CATEGORY = ['spice', 'oils', ]
 
 
 class SqlAlchemyRepository:
