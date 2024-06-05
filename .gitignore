@@ -1,3 +1,6 @@
+.idea/
+.env
+.venv/
 .vscode/
 .pytest_cache/
 .tox/

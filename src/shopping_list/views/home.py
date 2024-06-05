@@ -1,7 +1,7 @@
 import datetime
 from flask import Blueprint, current_app, render_template, request
 from flask_wtf import FlaskForm
-from wtforms import DateField, FieldList, FormField, StringField
+from wtforms.fields import DateField, FieldList, FormField, StringField
 
 from shopping_list.app.commands import add_meal, get_meals
 

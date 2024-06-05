@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "shopping-list"
+version = "2.0.0"
+description = "Simple shopping list generator"
+authors = ["Tibor Reiss <tibor.reiss@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask-wtf = "^1.2.1"
+flask = "^3.0.3"
+psycopg2 = "^2.9.9"
+pymongo = "^4.7.3"
+redis = "^5.0.4"
+sqlalchemy = "^2.0.30"
+python-dotenv = "^1.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+flake8 = "^7.0.0"
+mypy = "^1.10.0"
+ruff = "^0.4.8"
+beautifulsoup4 = "^4.12.3"
+pytest-mock = "^3.14.0"
+lxml = "^5.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

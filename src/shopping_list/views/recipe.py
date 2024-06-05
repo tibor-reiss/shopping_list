@@ -3,14 +3,14 @@ from flask import abort, Blueprint, current_app, flash, redirect, render_templat
 from flask_wtf import FlaskForm
 import imghdr
 import typing
-from wtforms import (
+from wtforms import validators
+from wtforms.fields import (
     FieldList,
     FloatField,
     FormField,
     SelectField,
     StringField,
     TextAreaField,
-    validators,
 )
 
 from shopping_list.app.model import CATEGORIES

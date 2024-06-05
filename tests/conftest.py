@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from typing import Any, List, Optional, Tuple
@@ -26,9 +26,11 @@ class MockStore(ImageStore):
 
 def insert_ingredient(session: Session, ing_name: str, category: str, unit: Optional[str] = None) -> int:
     result = session.execute(
-        """INSERT INTO 'shlist.ingredient' (ing_name, category, unit)
-        VALUES(:ing_name, :category, :unit)""",
-        dict(ing_name=ing_name, category=category, unit=unit)
+        text(
+            """INSERT INTO 'shlist.ingredient' (ing_name, category, unit)
+            VALUES(:ing_name, :category, :unit)"""
+        ),
+        dict(ing_name=ing_name, category=category, unit=unit),
     )
     session.commit()
     return result.lastrowid
@@ -36,9 +38,11 @@ def insert_ingredient(session: Session, ing_name: str, category: str, unit: Opti
 
 def insert_recipe(session: Session, title: str, description: Optional[str] = None) -> int:
     result = session.execute(
-        """INSERT INTO 'shlist.recipe' (title, description)
-        VALUES(:title, :description)""",
-        dict(title=title, description=description)
+        text(
+            """INSERT INTO 'shlist.recipe' (title, description)
+            VALUES(:title, :description)"""
+        ),
+        dict(title=title, description=description),
     )
     session.commit()
     return result.lastrowid
@@ -57,9 +61,11 @@ def insert_recipe_ingredient(
         )
     for i in ingredient_ids:
         session.execute(
-            """INSERT INTO 'shlist.recipe_ingredient' (recipe_id, ingredient_id, amount)
-            VALUES(:recipe_id, :ingredient_id, :amount)""",
-            dict(recipe_id=recipe_id, ingredient_id=i[0], amount=i[1])
+            text(
+                """INSERT INTO 'shlist.recipe_ingredient' (recipe_id, ingredient_id, amount)
+                VALUES(:recipe_id, :ingredient_id, :amount)"""
+            ),
+            dict(recipe_id=recipe_id, ingredient_id=i[0], amount=i[1]),
         )
 
 
@@ -69,7 +75,7 @@ def sqlite_session_factory():
     Base.metadata.create_all(engine)
     sm = sessionmaker(bind=engine)
     session = sm()
-    session.execute("PRAGMA foreign_keys=ON")
+    session.execute(text("PRAGMA foreign_keys=ON"))
     session.commit()
     session.close()
     yield sm
