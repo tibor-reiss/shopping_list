@@ -2,12 +2,10 @@ services:
   redis_db:
     container_name: redisdb
     image: redis/redis-stack-server:latest
-    command:
-    - redis-server
-    - --requirepass
-    - ${REDIS_PWD}
+    command: redis-server /redis.conf --requirepass ${REDIS_PWD}
     volumes:
-    - ${VOLUME_DIR}/redis_db:/var/lib/redis
+    - ./redis.conf:/redis.conf
+    - ${VOLUME_DIR}/redis_db:/data
     environment:
       REDIS_PWD: ${REDIS_PWD}
       VOLUME_DIR: ${VOLUME_DIR}
