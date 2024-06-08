@@ -1,3 +1,10 @@
+## Description
+Flask-based shopping list generator.  
+Recipes are stored in a postgres database (pictures in redis, which can
+be switched to mongodb).  
+On the main page one can enter the diet plan. List page will then generate
+a shopping list for the given date range.  
+
 ## Installation
 Clone the repo  
 Specify env variables in .env file (sample given as .env_template)  
