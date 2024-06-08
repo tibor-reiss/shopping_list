@@ -1,10 +1,7 @@
----
 services:
-  redis:
-    container_name: redis
+  redis_db:
+    container_name: redisdb
     image: redis/redis-stack-server:latest
-    ports:
-      - 6379:6379
     command:
     - redis-server
     - --requirepass
@@ -14,14 +11,20 @@ services:
     environment:
       REDIS_PWD: ${REDIS_PWD}
       VOLUME_DIR: ${VOLUME_DIR}
-  postgres:
-    container_name: postgres
+  postgres_db:
+    container_name: postgresdb
     image: postgres:latest
-    ports:
-      - 5432:5432
     restart: always
     volumes:
       - ${VOLUME_DIR}/postgres_db:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PWD}
       VOLUME_DIR: ${VOLUME_DIR}
+  flask_app:
+    container_name: flaskapp
+    image: flaskapp
+    depends_on:
+      - redis_db
+      - postgres_db
+    ports:
+      - 5000:5000
